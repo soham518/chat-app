@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 // import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import "dotenv/config";
 
+//register user function
 export const signup = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -84,7 +85,51 @@ export const signup = async (req, res) => {
   }
 };
 
-export const signin = async (req, res) => {
+//login user
+export const login = async (req, res) => {
   try {
+    const {email,password} = req.body;
+    if(!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "all feilds are required"
+      });
+    }
+    const user = await User.findOne({email});
+    if(!user) {
+     return res.status(400).json({
+        success: false,
+        message: "invalid credentials" //never tell client which credential is wrong
+      });
+    }
+    const isPasswordCorrect = await bcrypt.compare(password,user.password);
+    if(!isPasswordCorrect) {
+      return res.status(400).json({
+        success: false,
+        message: "invalid credentials" //never tell client which credential is wrong
+      });
+    }
+    generateToken(user._id,res);
+    user.password = undefined;
+    res.status(200).json({
+      success: true,
+      message: 'logged in successfully',
+      user: user
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong while loging in",err
+    })
+  }
+};
+
+// logout user function
+export const logout = async (_, res) => {
+  try {
+   res.cookie("jwt","",{maxAge:0});
+   res.status(200).json({message: "logout successful", success: true})
   } catch (err) {}
 };
