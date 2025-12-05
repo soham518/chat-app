@@ -5,12 +5,19 @@ import {
   signup,
   updateProfile,
 } from "../controllers/auth.controller.js";
+import {arcjetProtection} from "../middlewares/arcjet.middleware.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 const router = express.Router();
-
+router.use(arcjetProtection);
 //signup route
+//dummy test route to test arcjet through browser as postman is detected as bot
+router.get("/test", (req,res) => {
+  res.json({
+    message: "test route to check arcjet."
+  })
+});
 router.post("/signup", signup);
-router.post("/login", login);
+router.post("/login",arcjetProtection, login);
 router.post("/logout", logout);
 
 router.put("/update-profile", protectRoute, updateProfile);
