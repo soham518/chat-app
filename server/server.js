@@ -10,13 +10,14 @@ dotenv.config({path: "./.env"})
 
 //1. app setup
 const port = process.env.PORT;
-console.log(port)
+console.log("port:",port)
 const app = express();
-app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 const __dirname = path.resolve();
 
-app.use(express.json());
+
 app.listen(port,()=>{
     console.log('app is running on port',port);
 });
