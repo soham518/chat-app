@@ -1,9 +1,18 @@
-import { LoaderIcon } from "react-hot-toast";
+import toast, { LoaderIcon } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import { useState } from "react";
 const LogInPage = () => {
-  const {signup,isSigningUp} = useAuthStore();
+  const {isLogin,login, checkAuth} = useAuthStore();
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+      email: "",
+      password: "",
+    });
+  const handleClick = (e) => {
+    console.log(formData);
+    login(formData);
+  }
   return (
     <div className="flex justify-center items-center w-full">
       <div className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-xl rounded-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
@@ -25,11 +34,13 @@ const LogInPage = () => {
 
   {/* Username */}
   <div className="space-y-1">
-    <label className="text-white text-sm opacity-80">Username</label>
+    <label className="text-white text-sm opacity-80">Email</label>
     <input
       type="text"
-      placeholder="Enter username"
+      placeholder="Enter email"
       className="w-full px-4 py-2 bg-white/15 text-white placeholder-gray-300 border border-white/30 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none shadow-inner"
+      value={formData.email}
+      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
     />
   </div>
 
@@ -40,18 +51,21 @@ const LogInPage = () => {
       type="password"
       placeholder="******"
       className="w-full px-4 py-2 bg-white/15 text-white placeholder-gray-300 border border-white/30 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none shadow-inner"
+      value={formData.password}
+      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
     />
   </div>
 
   {/* Forgot Password */}
-  <div className="text-right text-sm text-gray-200 hover:text-indigo-400 cursor-pointer transition">
+  <div  className="text-right text-sm text-gray-200 hover:text-indigo-400 cursor-pointer transition">
     Forgot Password?
   </div>
 
   {/* Submit */}
   <button
     className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 rounded-lg shadow-[0_0_15px_rgba(89,0,255,0.5)] hover:shadow-[0_0_25px_rgba(89,0,255,0.8)] transition-all duration-300"
-    disabled={isSigningUp}
+    disabled={isLogin}
+    onClick={handleClick}
   >
     Login
   </button>
