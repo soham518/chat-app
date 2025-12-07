@@ -37,6 +37,7 @@ router.get("/check", protectRoute, (req, res) => {
   res.status(200).json({
     message: "user is authenticated",
     success: true,
+    user: req.user
   });
 });
 export default router;

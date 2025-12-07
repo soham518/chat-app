@@ -22,27 +22,56 @@ export const useChatStore = create((set, get) => ({
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 
   getAllContacts: async () => {
-    set({ isUsersLoading: true });
-    try {
-      const res = await axiosInstance.get("/messages/contacts");
-      set({ allContacts: res.data });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isUsersLoading: false });
+  set({ isUsersLoading: true });
+
+  try {
+    const res = await axiosInstance.get("/messages/contacts");
+
+    // normalize response
+    const list =
+      Array.isArray(res.data) ?
+      res.data :
+      res.data?.contacts ??
+      res.data?.users ??
+      [];
+
+    set({ allContacts: list });
+
+  } catch (error) {
+    console.log("Contact fetch error:", error);
+    toast.error(error.response?.data?.message || "Error loading contacts");
+    set({ allContacts: [] });
+  } finally {
+    set({ isUsersLoading: false });
+  }
+},
+getMyChatPartners: async () => {
+  set({ isUsersLoading: true });
+
+  try {
+    const res = await axiosInstance.get("/messages/chats");
+
+    // normalize response safely
+    let list = [];
+
+    if (Array.isArray(res.data)) {
+      list = res.data;
+    } else if (Array.isArray(res.data?.users)) {
+      list = res.data.users;
+    } else if (Array.isArray(res.data?.chats)) {
+      list = res.data.chats;
     }
-  },
-  getMyChatPartners: async () => {
-    set({ isUsersLoading: true });
-    try {
-      const res = await axiosInstance.get("/messages/chats");
-      set({ chats: res.data });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isUsersLoading: false });
-    }
-  },
+
+    set({ chats: list });
+
+  } catch (error) {
+    console.log("Chat load error:", error);
+    toast.error(error.response?.data?.message || "Something went wrong");
+    set({ chats: [] });
+  } finally {
+    set({ isUsersLoading: false });
+  }
+},
 
   getMessagesByUserId: async (userId) => {
     set({ isMessagesLoading: true });
@@ -97,12 +126,12 @@ export const useChatStore = create((set, get) => ({
       const currentMessages = get().messages;
       set({ messages: [...currentMessages, newMessage] });
 
-      if (isSoundEnabled) {
-        const notificationSound = new Audio("/sounds/notification.mp3");
+      // if (isSoundEnabled) {
+      //   const notificationSound = new Audio("/sounds/notification.mp3");
 
-        notificationSound.currentTime = 0; // reset to start
-        notificationSound.play().catch((e) => console.log("Audio play failed:", e));
-      }
+      //   notificationSound.currentTime = 0; // reset to start
+      //   notificationSound.play().catch((e) => console.log("Audio play failed:", e));
+      // }
     });
   },
 

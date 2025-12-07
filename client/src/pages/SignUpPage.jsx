@@ -14,6 +14,7 @@ const SignUpPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     signup(formData);
+    navigate("/");
   };
 
   return (
