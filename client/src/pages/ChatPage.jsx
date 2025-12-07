@@ -35,7 +35,7 @@ const ChatPage = () => {
 
         <button
           onClick={logout}
-          className="m-4 w-28 bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg shadow transition-all duration-300"
+          className="m-4 w-28 bg-cyan-600 hover:bg-cyan-900 text-white py-2 rounded-lg shadow transition-all duration-300"
         >
           Logout
         </button>
