@@ -1,8 +1,10 @@
 import { Server } from "socket.io";
 import { socketAuthMiddleware } from "../middlewares/socket.auth.middleware.js";
-import "dotenv/config"
-// holds socket.io reference
+import "dotenv/config";
+
+// global socket registry
 let io;
+const userSocketMap = {}; // track online users
 
 const setupSocket = (httpServer) => {
   io = new Server(httpServer, {
@@ -14,13 +16,12 @@ const setupSocket = (httpServer) => {
 
   io.use(socketAuthMiddleware);
 
-  const userSocketMap = {};
-
   io.on("connection", (socket) => {
     console.log("A user connected", socket.user.fullName);
 
     const userId = socket.userId;
     userSocketMap[userId] = socket.id;
+
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     socket.on("disconnect", () => {
@@ -33,4 +34,7 @@ const setupSocket = (httpServer) => {
   return io;
 };
 
-export { setupSocket, io };
+// Now this is correctly at top level (not inside setupSocket)
+const getReceiverSocketId = (userId) => userSocketMap[userId];
+
+export { setupSocket, io, getReceiverSocketId };

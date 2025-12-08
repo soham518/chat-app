@@ -2,7 +2,8 @@ import cloudinary from "../lib/cloudinary.js";
 import mongoose from "mongoose";
 import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
-
+import { getReceiverSocketId } from "../lib/socket.js";
+import { io } from "../lib/socket.js";
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -92,7 +93,11 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
     await newMessage.save();
-    // to-do: send the message to user in realtime if user is online.
+    // to-do: send the message to user in realtime if user is online. (done).
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if(receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage",newMessage)
+    }
     return res.status(200).json({
       message: "message sent!",
       data: newMessage,

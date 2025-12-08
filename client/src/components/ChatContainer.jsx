@@ -6,7 +6,13 @@ import MessageInput from "./MessageInput";
 import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
 
 const ChatContainer = () => {
-  const { selectedUser, getMessagesByUserId, messages } = useChatStore();
+  const {
+    selectedUser,
+    getMessagesByUserId,
+    messages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
   const { authUser } = useAuthStore();
   const user = authUser?.user;
 
@@ -16,8 +22,12 @@ const ChatContainer = () => {
   useEffect(() => {
     if (selectedUser?._id) {
       getMessagesByUserId(selectedUser._id);
+      subscribeToMessages();
+
+      return () => unsubscribeFromMessages();
     }
-  }, [selectedUser]);
+    //cleanup
+  }, [selectedUser, getMessagesByUserId, subscribeToMessages,unsubscribeFromMessages ]);
 
   // Auto scroll to the bottom ON new messages
   useEffect(() => {

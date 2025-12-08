@@ -125,7 +125,7 @@ sendMessage: async(messageData) => {
 },
 
   subscribeToMessages: () => {
-    const { selectedUser, isSoundEnabled } = get();
+    const { selectedUser} = get();
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
@@ -137,12 +137,6 @@ sendMessage: async(messageData) => {
       const currentMessages = get().messages;
       set({ messages: [...currentMessages, newMessage] });
 
-      // if (isSoundEnabled) {
-      //   const notificationSound = new Audio("/sounds/notification.mp3");
-
-      //   notificationSound.currentTime = 0; // reset to start
-      //   notificationSound.play().catch((e) => console.log("Audio play failed:", e));
-      // }
     });
   },
 
