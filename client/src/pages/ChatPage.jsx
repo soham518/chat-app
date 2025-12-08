@@ -16,7 +16,7 @@ const ChatPage = () => {
   if (isLogin) return <PageLoader />;         // during login submission
 
   return (
-    <div className="relative w-full max-w-6xl h-[650px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_0_25px_rgba(0,0,50,0.4)] overflow-hidden flex">
+    <div className="mt-250 relative w-full max-w-6xl h-[650px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_0_25px_rgba(0,0,50,0.4)] overflow-hidden flex">
       
       {/* SIDEBAR */}
       <div className="w-[35%] bg-gradient-to-b from-slate-900/60 via-slate-800/50 to-slate-900/60 border-r border-white/10 flex flex-col">

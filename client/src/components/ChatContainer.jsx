@@ -1,68 +1,81 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
-import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
 import MessageInput from "./MessageInput";
-import MessagesLoadingSkeletonn from "./MessagesLoadingSkeletonn";
+import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
+
 const ChatContainer = () => {
-  const { selectedUser, getMessagesByUserId, messages, isMessagesLoading } = useChatStore();
+  const { selectedUser, getMessagesByUserId, messages } = useChatStore();
   const { authUser } = useAuthStore();
   const user = authUser?.user;
 
+  const scrollContainerRef = useRef(null);
+
+  // Load messages when switching user
   useEffect(() => {
     if (selectedUser?._id) {
       getMessagesByUserId(selectedUser._id);
-      console.log("messages fetched for", selectedUser.fullName);
-      console.log("messages",messages);
     }
-  }, [selectedUser, getMessagesByUserId]);
+  }, [selectedUser]);
+
+  // Auto scroll to the bottom ON new messages
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
-    <>
- <div className="flex flex-col h-full">
-
-      {/* header */}
+    <div className="flex flex-col h-full bg-white/10 backdrop-blur-xl border-l border-white/10">
       <ChatHeader />
 
-      {/* messages area */}
-      <div className="flex-1 px-6 overflow-y-auto py-8">
-        {messages?.messages?.length > 0  && !isMessagesLoading ? (
+      {/* Messages Scroll Area */}
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 px-6 overflow-y-auto py-8"
+      >
+        {messages.length > 0 ? (
           <div className="max-w-3xl mx-auto space-y-6">
-            {messages.messages.map((msg) => (
+            {messages.map((mess) => (
               <div
-                key={msg._id}
-                className={`chat ${msg.senderId === user._id ? "chat-end" : "chat-start"}`}
+                key={mess._id}
+                className={`chat ${
+                  mess.senderId === user._id ? "chat-end" : "chat-start"
+                }`}
               >
                 <div
                   className={`chat-bubble relative ${
-                    msg.senderId === user._id
+                    mess.senderId === user._id
                       ? "bg-cyan-600 text-white"
                       : "bg-slate-800 text-slate-200"
                   }`}
                 >
-                  {msg.text && <p className="mt-2">{msg.text}</p>}
-                  {msg.image && <img src={msg.image} className="rounded-lg h-48 object-cover"></img>}
-                  <p className="text-xs mt-1 opacity-75 flex items-center gap-1">
-                  {new Date(msg.createdAt).toISOString().slice(11,16)}
-                  </p>
-
+                  {mess.text && <p className="mt-2">{mess.text}</p>}
+                  {mess.image && (
+                    <img
+                      src={mess.image}
+                      alt="Shared"
+                      className="rounded-lg h-48 object-cover"
+                    />
+                  )}
+                  <p className="mt-1 text-xs">
+                    {new Date().toISOString().substring(11, 16)}
+                  </p>{" "}
                 </div>
               </div>
             ))}
           </div>
-
-        ): isMessagesLoading ? <MessagesLoadingSkeletonn /> : (
-          <NoChatHistoryPlaceholder />
+        ) : (
+          <NoChatHistoryPlaceholder name={selectedUser.fullName} />
         )}
       </div>
 
+      <div className="border-t border-white/10 bg-slate-900/40 backdrop-blur-xl">
+        <MessageInput />
+      </div>
     </div>
-    <div>
-      <MessageInput />
-    </div>
-    </>
-   
   );
 };
 
