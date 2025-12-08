@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import UserLoadingSkeleton from "./UserLoadingSkeleton";
 import NoChatsFound from "./NoChatsFound";
+import { useAuthStore } from "../store/useAuthStore";
 
 const ChatList = () => {
   const {
@@ -9,9 +10,8 @@ const ChatList = () => {
     chats,
     isUsersLoading,
     setSelectedUser,
-    onlineUsers = [] 
   } = useChatStore();
-
+  const {onlineUsers} = useAuthStore();
   useEffect(() => {
     getMyChatPartners();
   }, []); // avoid unstable dependency rerender loops

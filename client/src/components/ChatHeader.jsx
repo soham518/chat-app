@@ -1,14 +1,15 @@
-import { useChatStore } from "../store/useChatStore";
-import avatar from "../../public/avatar.png";
 import { XIcon } from "lucide-react";
+import avatar from "../../public/avatar.png";
+import { useAuthStore } from "../store/useAuthStore";
+import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const profilePic = selectedUser?.profilePic;
-
+  const { onlineUsers } = useAuthStore();
+  const isOnline = onlineUsers.includes(selectedUser._id);
   return (
     <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border-b border-white/10 p-3">
-
       {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20">
         <img
@@ -23,7 +24,11 @@ const ChatHeader = () => {
         <h2 className="text-slate-200 text-sm font-medium">
           {selectedUser?.fullName}
         </h2>
-        <p className="text-xs text-green-400">Online</p>
+        <p
+          className={`${isOnline ? "text-green-500" : "text-gray-400"} text-xs`}
+        >
+          {isOnline ? "online" : "offline"}
+        </p>
       </div>
 
       {/* Close icon */}
